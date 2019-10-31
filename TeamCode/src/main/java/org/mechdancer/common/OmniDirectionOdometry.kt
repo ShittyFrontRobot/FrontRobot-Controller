@@ -10,16 +10,16 @@ import org.mechdancer.algebra.function.vector.component3
 import org.mechdancer.algebra.implement.equation.builder.equations
 import org.mechdancer.algebra.implement.matrix.builder.matrix
 import org.mechdancer.algebra.implement.vector.listVectorOf
-import org.mechdancer.common.Odometry.Companion.odometry
+import org.mechdancer.common.Pose2D.Companion.odometry
 import org.mechdancer.geometry.angle.toVector
 import kotlin.math.tan
 
 class OmniDirectionOdometry(
-    encoder0: Odometry,
-    encoder1: Odometry,
-    encoder2: Odometry
+    encoder0: Pose2D,
+    encoder1: Pose2D,
+    encoder2: Pose2D
 ) {
-    var pose = Odometry()
+    var pose = Pose2D()
         private set
     private val parameters = listOf(encoder0, encoder1, encoder2)
     private val solver =
@@ -39,7 +39,7 @@ class OmniDirectionOdometry(
                 }
             }.inverse()
 
-    fun update(v0: Double, v1: Double, v2: Double): Odometry {
+    fun update(v0: Double, v1: Double, v2: Double): Pose2D {
         val (u1, u2, theta) = solver * listVectorOf(v0, v1, v2)
         val (x, y) =
             if (doubleEquals(theta, .0)) {
@@ -64,6 +64,6 @@ class OmniDirectionOdometry(
     }
 
     fun clean() {
-        pose = Odometry()
+        pose = Pose2D()
     }
 }
