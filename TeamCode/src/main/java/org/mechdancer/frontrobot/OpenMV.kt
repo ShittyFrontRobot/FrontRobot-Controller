@@ -15,9 +15,11 @@ import org.mechdancer.ftclib.util.OpModeLifecycle
 import org.mechdancer.ftclib.util.SmartLogger
 import org.mechdancer.ftclib.util.warn
 import org.mechdancer.geometry.angle.toRad
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class OpenMV
-    : MonomericStructure("openmv"),
+    : MonomericStructure("openMV"),
       OpModeLifecycle.Initialize<Robot>,
       OpModeLifecycle.Start,
       OpModeLifecycle.Stop,
@@ -28,12 +30,16 @@ class OpenMV
     private lateinit var ioManager: SerialInputOutputManager
     private lateinit var port: UsbSerialPort
 
-//    Use thread provided by OpMode
-//    private lateinit var executor: ExecutorService
+    private lateinit var executor: ExecutorService
 
-    lateinit var aprilTag: Pose3D
+    var aprilTag = Pose3D.zero()
+    
 
     override fun init(opMode: OpModeWithRobot<Robot>) {
+        init()
+    }
+
+    fun init() {
         val drivers =
             UsbSerialProber
                 .getDefaultProber()
@@ -51,17 +57,16 @@ class OpenMV
     }
 
     override fun start() {
-//        executor = Executors.newSingleThreadExecutor().apply { submit(ioManager) }
+        executor = Executors.newSingleThreadExecutor().apply { submit(ioManager) }
     }
 
     override fun run() {
-        ioManager.run()
     }
 
     override fun stop() {
         ioManager.stop()
         port.close()
-//        executor.shutdown()
+        executor.shutdown()
     }
 
     override fun onRunError(e: Exception) {

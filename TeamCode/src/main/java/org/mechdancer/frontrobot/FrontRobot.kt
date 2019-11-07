@@ -8,12 +8,16 @@ class FrontRobot : Robot(
     "front_robot",
     false,
     Mecanum(enable = true),
-    Locator()) {
+    Locator(),
+    OpenMV()) {
 
     @Inject
     lateinit var chassis: Mecanum
 
     @Inject
     lateinit var locator: Locator
+
+    @Inject
+    lateinit var openMV: OpenMV
 
 }

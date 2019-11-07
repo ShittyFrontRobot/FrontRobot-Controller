@@ -1,6 +1,7 @@
 package org.mechdancer.frontrobot
 
 import org.mechdancer.common.OmniDirectionOdometry
+import org.mechdancer.common.Pose2D
 import org.mechdancer.ftclib.core.structure.composite.AbstractStructure
 import org.mechdancer.ftclib.core.structure.injector.Inject
 import org.mechdancer.ftclib.core.structure.monomeric.encoder
@@ -31,12 +32,17 @@ class Locator : AbstractStructure("locator", {
     private var lastE1 = .0
     private var lastE2 = .0
 
-    private val odometry: OmniDirectionOdometry = TODO()
+    private val odometry: OmniDirectionOdometry = OmniDirectionOdometry(
+        Pose2D(),
+        Pose2D(),
+        Pose2D()
+    )
 
     val pose
         get() = odometry.pose
 
     override fun run() {
+        return
         odometry.update(
             e0.position - lastE0,
             e1.position - lastE1,
@@ -48,6 +54,7 @@ class Locator : AbstractStructure("locator", {
     }
 
     override fun reset() {
+        return
         odometry.clean()
     }
 }
