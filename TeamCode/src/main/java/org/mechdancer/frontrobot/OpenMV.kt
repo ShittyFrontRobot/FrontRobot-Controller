@@ -33,7 +33,7 @@ class OpenMV
     private lateinit var executor: ExecutorService
 
     var aprilTag = Pose3D.zero()
-    
+
 
     override fun init(opMode: OpModeWithRobot<Robot>) {
         init()
@@ -74,9 +74,13 @@ class OpenMV
     }
 
     override fun onNewData(data: ByteArray) {
-        String(data).trim().split(",").map { it.toDouble() }.let {
-            Pose3D(it[0], it[1], it[2], it[3].toRad(), it[4].toRad(), it[5].toRad())
-        }.let { aprilTag = it }
+        try {
+            String(data).trim().split(",").map { it.toDouble() }.let {
+                Pose3D(it[0], it[1], it[2], it[3].toRad(), it[4].toRad(), it[5].toRad())
+            }.let { aprilTag = it }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
     }
 
     override fun toString(): String = javaClass.simpleName

@@ -1,10 +1,8 @@
 package org.mechdancer.common
 
-import org.mechdancer.algebra.implement.matrix.Cofactor
-import org.mechdancer.algebra.implement.vector.to3D
 import org.mechdancer.algebra.implement.vector.vector3DOf
-import org.mechdancer.algebra.implement.vector.vector3DOfZero
 import org.mechdancer.geometry.angle.Angle
+import org.mechdancer.geometry.angle.toDegree
 import org.mechdancer.geometry.angle.toRad
 import org.mechdancer.geometry.rotation3d.Angle3D
 import org.mechdancer.geometry.rotation3d.AxesOrder
@@ -24,6 +22,8 @@ data class Pose3D(
     }
 }
 
+val idealTagToTag = Transformation.fromInhomogeneous(Angle3D.Euler(90.0.toDegree(), 0.toRad(), 0.toRad(), AxesOrder.XYZ).matrix, vector3DOf(.0, .0, .0))
+
 // Axes order of *AprilTag*: Z, Y, X
 // Intrinsic
 fun tagToCamera(aprilTag: Pose3D) =
@@ -39,12 +39,7 @@ fun cameraToRobot(camera: Pose3D) =
     }
 
 fun robotToTag(aprilTag: Pose3D, camera: Pose3D) =
-    cameraToRobot(camera) * tagToCamera(aprilTag)
+    (cameraToRobot(camera) * tagToCamera(aprilTag)).inverse()
 
-fun Transformation.toPose3D(): Pose3D {
-    require(dim == 3)
-    val move = invokeLinear(vector3DOfZero()).to3D()
-    val linear = Cofactor(matrix, 3, 3)
-    val angle = Angle3D.fromMatrix<Angle3D.RollPitchYaw>(linear, AxesOrder.XYZ)
-    return Pose3D(move.x, move.y, move.z, angle.first, angle.second, angle.third)
-}
+fun robotToIdealTag(aprilTag: Pose3D, camera: Pose3D) =
+    (cameraToRobot(camera) * tagToCamera(aprilTag) * idealTagToTag).inverse()
