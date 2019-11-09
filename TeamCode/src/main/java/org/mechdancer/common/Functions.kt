@@ -29,12 +29,15 @@ operator fun Transformation.invoke(pose: Pose2D) =
     Pose2D(invoke(pose.p).to2D(), invokeLinear(pose.d.toVector()).to2D().toAngle())
 
 
-fun Transformation.toPose3D(): Pose3D {
+fun Transformation.toPose3D(axesOrder: AxesOrder): Pose3D {
     require(dim == 3)
-    val move = invokeLinear(vector3DOfZero()).to3D()
+    val move = invoke(vector3DOfZero()).to3D()
     val linear = Cofactor(matrix, 3, 3)
-    val angle = Angle3D.fromMatrix<Angle3D.RollPitchYaw>(linear, AxesOrder.XYZ)
-    return Pose3D(move.x, move.y, move.z, angle.first, angle.second, angle.third)
+    val angle = Angle3D.fromMatrix(linear, axesOrder)
+    return Pose3D(move, angle)
 }
+
+fun Pose3D.toTransformation() =
+    Transformation.fromInhomogeneous(d.matrix, p)
 
 fun usbManager() = AppUtil.getDefContext().getSystemService(Context.USB_SERVICE) as UsbManager

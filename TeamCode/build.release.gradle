@@ -7,6 +7,6 @@ dependencies {
     implementation (name: 'tfod-release', ext:'aar')
     implementation (name: 'tensorflow-lite-0.0.0-nightly', ext:'aar')
     implementation (name: 'mechdancerlib', ext: 'aar')
-    implementation ("org.mechdancer:linearalgebra:0.2.6-dev-1")
+    implementation ("org.mechdancer:linearalgebra:0.2.6-dev-2")
     implementation 'com.github.mik3y:usb-serial-for-android:2.0.0'
 }

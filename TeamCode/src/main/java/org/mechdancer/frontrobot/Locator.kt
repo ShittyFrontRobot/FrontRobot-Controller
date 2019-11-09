@@ -9,15 +9,15 @@ import org.mechdancer.ftclib.core.structure.monomeric.sensor.Encoder
 import org.mechdancer.ftclib.util.AutoCallable
 import org.mechdancer.ftclib.util.Resettable
 
-class Locator : AbstractStructure("locator", {
+class Locator(private val enable: Boolean) : AbstractStructure("locator", {
     encoder("e0") {
-        enable = true
+        this.enable = enable
     }
     encoder("e1") {
-        enable = true
+        this.enable = enable
     }
     encoder("e2") {
-        enable = true
+        this.enable = enable
     }
 }), AutoCallable, Resettable {
 
@@ -32,6 +32,7 @@ class Locator : AbstractStructure("locator", {
     private var lastE1 = .0
     private var lastE2 = .0
 
+    // TODO: Encoder pose
     private val odometry: OmniDirectionOdometry = OmniDirectionOdometry(
         Pose2D(),
         Pose2D(),
@@ -42,7 +43,7 @@ class Locator : AbstractStructure("locator", {
         get() = odometry.pose
 
     override fun run() {
-        return
+        if (!enable) return
         odometry.update(
             e0.position - lastE0,
             e1.position - lastE1,
@@ -54,7 +55,7 @@ class Locator : AbstractStructure("locator", {
     }
 
     override fun reset() {
-        return
+        if (!enable) return
         odometry.clean()
     }
 }

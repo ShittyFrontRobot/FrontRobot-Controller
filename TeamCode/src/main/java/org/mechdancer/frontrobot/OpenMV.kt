@@ -6,6 +6,7 @@ import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil
+import org.mechdancer.algebra.implement.vector.vector3DOf
 import org.mechdancer.common.Pose3D
 import org.mechdancer.common.usbManager
 import org.mechdancer.ftclib.core.opmode.OpModeWithRobot
@@ -15,6 +16,8 @@ import org.mechdancer.ftclib.util.OpModeLifecycle
 import org.mechdancer.ftclib.util.SmartLogger
 import org.mechdancer.ftclib.util.warn
 import org.mechdancer.geometry.angle.toRad
+import org.mechdancer.geometry.rotation3d.Angle3D
+import org.mechdancer.geometry.rotation3d.AxesOrder
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -76,7 +79,11 @@ class OpenMV
     override fun onNewData(data: ByteArray) {
         try {
             String(data).trim().split(",").map { it.toDouble() }.let {
-                Pose3D(it[0], it[1], it[2], it[3].toRad(), it[4].toRad(), it[5].toRad())
+                // Intrinsic Z-Y-X -> Extrinsic X-Y-Z
+                Pose3D(
+                    vector3DOf(it[0], it[1], it[2]),
+                    Angle3D(it[3].toRad(), it[4].toRad(), it[5].toRad(), AxesOrder.XYZ)
+                )
             }.let { aprilTag = it }
         } catch (e: Throwable) {
             e.printStackTrace()
