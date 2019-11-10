@@ -36,5 +36,8 @@ data class Pose2D(
     companion object {
         fun odometry(x: Number, y: Number, theta: Number = 0) =
             Pose2D(vector2DOf(x, y), theta.toRad())
+
+        fun zero() =
+            Pose2D(vector2DOfZero(), 0.toRad())
     }
 }

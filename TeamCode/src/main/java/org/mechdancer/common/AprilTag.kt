@@ -8,8 +8,9 @@ import org.mechdancer.geometry.rotation3d.AxesOrder
 import org.mechdancer.geometry.transformation.Transformation
 
 
+//TODO 反了
 val idealTagToTag =
-    Transformation.fromInhomogeneous(Angle3D(90.0.toDegree(), 0.toRad(), 0.toRad(), AxesOrder.XYZ).matrix, vector3DOfZero())
+    Transformation.fromInhomogeneous(Angle3D((-90.0).toDegree(), 0.toRad(), 0.toRad(), AxesOrder.XYZ).matrix, vector3DOfZero())
 
 // Axes order of *AprilTag*: Z, Y, X
 // Intrinsic
@@ -19,8 +20,8 @@ fun tagToCamera(aprilTag: Pose3D) = aprilTag.toTransformation()
 // Extrinsic
 fun cameraToRobot(camera: Pose3D) = camera.toTransformation()
 
-fun robotToTag(aprilTag: Pose3D, camera: Pose3D) =
-    (cameraToRobot(camera) * tagToCamera(aprilTag)).inverse()
+fun tagToRobot(aprilTag: Pose3D, camera: Pose3D) =
+    (cameraToRobot(camera) * tagToCamera(aprilTag))
 
-fun robotToIdealTag(aprilTag: Pose3D, camera: Pose3D) =
-    (cameraToRobot(camera) * tagToCamera(aprilTag) * idealTagToTag).inverse()
+fun idealTagToRobot(aprilTag: Pose3D, camera: Pose3D) =
+    cameraToRobot(camera) * tagToCamera(aprilTag) * idealTagToTag

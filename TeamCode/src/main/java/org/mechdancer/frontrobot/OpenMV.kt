@@ -7,7 +7,10 @@ import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil
 import org.mechdancer.algebra.implement.vector.vector3DOf
+import org.mechdancer.algebra.implement.vector.vector3DOfZero
 import org.mechdancer.common.Pose3D
+import org.mechdancer.common.idealTagToRobot
+import org.mechdancer.common.toPose3D
 import org.mechdancer.common.usbManager
 import org.mechdancer.ftclib.core.opmode.OpModeWithRobot
 import org.mechdancer.ftclib.core.structure.MonomericStructure
@@ -15,7 +18,7 @@ import org.mechdancer.ftclib.core.structure.composite.Robot
 import org.mechdancer.ftclib.util.OpModeLifecycle
 import org.mechdancer.ftclib.util.SmartLogger
 import org.mechdancer.ftclib.util.warn
-import org.mechdancer.geometry.angle.toRad
+import org.mechdancer.geometry.angle.toDegree
 import org.mechdancer.geometry.rotation3d.Angle3D
 import org.mechdancer.geometry.rotation3d.AxesOrder
 import java.util.concurrent.ExecutorService
@@ -30,13 +33,22 @@ class OpenMV(private val enable: Boolean = false)
       SerialInputOutputManager.Listener {
 
 
+    companion object {
+        //TODO 反了
+        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 0.toDegree(), (-90).toDegree(), AxesOrder.ZYX))
+    }
+
     private lateinit var ioManager: SerialInputOutputManager
     private lateinit var port: UsbSerialPort
 
     private lateinit var executor: ExecutorService
 
-    var aprilTag = Pose3D.zero()
 
+    var rawTag = Pose3D.zero()
+    var idealTagOnRobot = Pose3D.zero()
+
+
+    var newDataCallback = { _: Pose3D -> }
 
     override fun init(opMode: OpModeWithRobot<Robot>) {
         init()
@@ -85,9 +97,13 @@ class OpenMV(private val enable: Boolean = false)
                 // Intrinsic Z-Y-X -> Extrinsic X-Y-Z
                 Pose3D(
                     vector3DOf(it[0], it[1], it[2]),
-                    Angle3D(it[3].toRad(), it[4].toRad(), it[5].toRad(), AxesOrder.XYZ)
+                    Angle3D(it[3].toDegree(), it[4].toDegree(), it[5].toDegree(), AxesOrder.XYZ)
                 )
-            }.let { aprilTag = it }
+            }.let {
+                rawTag = it
+                idealTagOnRobot = idealTagToRobot(it, camera).toPose3D(AxesOrder.XYZ)
+                newDataCallback(idealTagOnRobot)
+            }
         } catch (e: Throwable) {
             e.printStackTrace()
         }
