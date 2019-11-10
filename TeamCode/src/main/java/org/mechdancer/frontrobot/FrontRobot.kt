@@ -3,18 +3,26 @@ package org.mechdancer.frontrobot
 import org.mechdancer.ftclib.core.structure.composite.Robot
 import org.mechdancer.ftclib.core.structure.composite.chassis.Mecanum
 import org.mechdancer.ftclib.core.structure.injector.Inject
+import org.mechdancer.ftclib.core.structure.monomeric.effector.Motor
 
 class FrontRobot : Robot(
     "front_robot",
     false,
-    Mecanum(enable = true),
-    Locator(),
-    OpenMV()) {
+    Mecanum(
+        enable = true,
+        lfMotorDirection = Motor.Direction.FORWARD,
+        lbMotorDirection = Motor.Direction.FORWARD,
+        rfMotorDirection = Motor.Direction.REVERSE,
+        rbMotorDirection = Motor.Direction.REVERSE
+    ),
+    Locator(true),
+    OpenMV(false)
+) {
 
     @Inject
     lateinit var chassis: Mecanum
 
-    @Inject
+    @Inject(name = "chassis")
     lateinit var locator: Locator
 
     @Inject

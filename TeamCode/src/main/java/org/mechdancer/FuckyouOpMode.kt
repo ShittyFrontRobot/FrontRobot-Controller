@@ -20,7 +20,7 @@ class FuckyouOpMode() : OpMode() {
     private val camera = Pose3D(vector3DOfZero(), Angle3D(90.0.toDegree(), (-90.0).toDegree(), .0.toDegree(), AxesOrder.XYZ))
 
     override fun init() {
-        openMV = OpenMV()
+        openMV = OpenMV(true)
         openMV.init()
     }
 

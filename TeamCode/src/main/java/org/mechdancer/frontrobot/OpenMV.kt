@@ -21,7 +21,7 @@ import org.mechdancer.geometry.rotation3d.AxesOrder
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class OpenMV
+class OpenMV(private val enable: Boolean = false)
     : MonomericStructure("openMV"),
       OpModeLifecycle.Initialize<Robot>,
       OpModeLifecycle.Start,
@@ -43,6 +43,7 @@ class OpenMV
     }
 
     fun init() {
+        if (!enable) return
         val drivers =
             UsbSerialProber
                 .getDefaultProber()
@@ -60,6 +61,7 @@ class OpenMV
     }
 
     override fun start() {
+        if (!enable) return
         executor = Executors.newSingleThreadExecutor().apply { submit(ioManager) }
     }
 
@@ -67,6 +69,7 @@ class OpenMV
     }
 
     override fun stop() {
+        if (!enable) return
         ioManager.stop()
         port.close()
         executor.shutdown()
