@@ -7,10 +7,15 @@ import org.mechdancer.algebra.function.matrix.times
 import org.mechdancer.algebra.function.vector.component1
 import org.mechdancer.algebra.function.vector.component2
 import org.mechdancer.algebra.function.vector.component3
+import org.mechdancer.algebra.function.vector.dot
 import org.mechdancer.algebra.implement.equation.builder.equations
 import org.mechdancer.algebra.implement.matrix.builder.matrix
+import org.mechdancer.algebra.implement.vector.Vector2D
 import org.mechdancer.algebra.implement.vector.listVectorOf
+import org.mechdancer.algebra.implement.vector.vector2DOf
 import org.mechdancer.common.Pose2D.Companion.odometry
+import org.mechdancer.geometry.angle.rotate
+import org.mechdancer.geometry.angle.toDegree
 import org.mechdancer.geometry.angle.toVector
 import kotlin.math.tan
 
@@ -39,6 +44,28 @@ class OmniDirectionOdometry(
                 }
             }.inverse()
 
+    private val solver2=parameters.map {
+        (p,d)->
+        val e1= vector2DOf(1,0).rotate(d)
+
+        Triple(e1.x,e1.y,p.rotate(90.toDegree()) dot e1)
+    }.let { (a, b, c) ->
+        val (a1, a2, a3) = a
+        val (b1, b2, b3) = b
+        val (c1, c2, c3) = c
+        matrix {
+            row(a1, a2, a3)
+            row(b1, b2, b3)
+            row(c1, c2, c3)
+        }
+    }.inverse()
+
+    fun update2(v0: Double, v1: Double, v2: Double): Pose2D {
+        val (u1, u2, theta) = solver * listVectorOf(v0, v1, v2)
+        val (x, y) = vector2DOf(u1,u2).rotate(pose.d)
+        pose = pose plusDelta odometry(x, y, theta)
+        return pose
+    }
     fun update(v0: Double, v1: Double, v2: Double): Pose2D {
         val (u1, u2, theta) = solver * listVectorOf(v0, v1, v2)
         val (x, y) =
