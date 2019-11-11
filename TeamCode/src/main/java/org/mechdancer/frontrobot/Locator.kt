@@ -14,15 +14,15 @@ import org.mechdancer.geometry.angle.toDegree
 class Locator(private val enable: Boolean = false)
     : AbstractStructure("chassis", {
     encoder("LF") {
-        cpr = 2000.0
+        cpr = ENCODER_CPR
         this.enable = enable
     }
     encoder("LB") {
-        cpr = 2000.0
+        cpr = ENCODER_CPR
         this.enable = enable
     }
     encoder("RF") {
-        cpr = 2000.0
+        cpr = ENCODER_CPR
         this.enable = enable
     }
 }), AutoCallable, Resettable {
@@ -43,13 +43,13 @@ class Locator(private val enable: Boolean = false)
     val currentRight
         get() = e1.position
     val currentCenter
-        get() = e1.position
+        get() = e2.position
 
     // TODO: Encoder pose
     private val odometry: OmniDirectionOdometry = OmniDirectionOdometry(
         Pose2D(vector2DOf(-0.08065, 0.03426), 45.toDegree()),
-        Pose2D(vector2DOf(0.08065, 0.03425), 135.toDegree()),
-        Pose2D(vector2DOf(-0.019, -0.046), 0.toDegree())
+        Pose2D(vector2DOf(0.08065, 0.03425), (-45).toDegree()),
+        Pose2D(vector2DOf(-0.019, -0.046), (-90).toDegree())
     )
 
     val pose
@@ -58,17 +58,27 @@ class Locator(private val enable: Boolean = false)
     override fun run() {
         if (!enable) return
         odometry.update(
-            e0.position - lastE0,
-            e1.position - lastE1,
-            e2.position - lastE2
+            e0.shit() - lastE0,
+            e1.shit() - lastE1,
+            e2.shit() - lastE2
         )
-        lastE0 = e0.position
-        lastE1 = e1.position
-        lastE2 = e2.position
+        lastE0 = e0.shit()
+        lastE1 = e1.shit()
+        lastE2 = e2.shit()
     }
 
     override fun reset() {
         if (!enable) return
         odometry.clean()
+        e0.reset(.0)
+        e1.reset(.0)
+        e2.reset(.0)
+    }
+
+    private fun Encoder.shit() = position * TRACK
+
+    companion object {
+        const val ENCODER_CPR = 4000.0
+        const val TRACK = 0.0375
     }
 }

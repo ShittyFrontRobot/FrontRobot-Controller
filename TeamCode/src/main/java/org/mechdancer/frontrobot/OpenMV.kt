@@ -6,6 +6,8 @@ import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil
+import org.mechdancer.algebra.function.vector.div
+import org.mechdancer.algebra.implement.vector.to3D
 import org.mechdancer.algebra.implement.vector.vector3DOf
 import org.mechdancer.algebra.implement.vector.vector3DOfZero
 import org.mechdancer.common.Pose3D
@@ -34,8 +36,7 @@ class OpenMV(private val enable: Boolean = false)
 
 
     companion object {
-        //TODO 反了
-        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 0.toDegree(), (-90).toDegree(), AxesOrder.ZYX))
+        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 0.toDegree(), 90.toDegree(), AxesOrder.ZYX))
     }
 
     private lateinit var ioManager: SerialInputOutputManager
@@ -96,10 +97,12 @@ class OpenMV(private val enable: Boolean = false)
             String(data).trim().split(",").map { it.toDouble() }.let {
                 // Intrinsic Z-Y-X -> Extrinsic X-Y-Z
                 Pose3D(
-                    vector3DOf(it[0], it[1], it[2]),
+                    // 1m -> 20.0
+                    (vector3DOf(it[0], it[1], it[2]) / 20.0).to3D(),
                     Angle3D(it[3].toDegree(), it[4].toDegree(), it[5].toDegree(), AxesOrder.XYZ)
                 )
             }.let {
+                warn("new data: $it")
                 rawTag = it
                 idealTagOnRobot = idealTagToRobot(it, camera).toPose3D(AxesOrder.XYZ)
                 newDataCallback(idealTagOnRobot)
