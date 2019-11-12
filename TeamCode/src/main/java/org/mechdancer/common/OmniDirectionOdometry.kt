@@ -7,10 +7,14 @@ import org.mechdancer.algebra.function.matrix.times
 import org.mechdancer.algebra.function.vector.component1
 import org.mechdancer.algebra.function.vector.component2
 import org.mechdancer.algebra.function.vector.component3
+import org.mechdancer.algebra.function.vector.dot
 import org.mechdancer.algebra.implement.equation.builder.equations
 import org.mechdancer.algebra.implement.matrix.builder.matrix
 import org.mechdancer.algebra.implement.vector.listVectorOf
+import org.mechdancer.algebra.implement.vector.vector2DOf
 import org.mechdancer.common.Pose2D.Companion.odometry
+import org.mechdancer.geometry.angle.rotate
+import org.mechdancer.geometry.angle.toDegree
 import org.mechdancer.geometry.angle.toVector
 import kotlin.math.tan
 
@@ -39,7 +43,7 @@ class OmniDirectionOdometry(
                 }
             }.inverse()
 
-    /*  private val solver2=parameters.map {
+    private val solver2 = parameters.map {
           (p,d)->
           val e1= vector2DOf(1,0).rotate(d)
 
@@ -59,7 +63,8 @@ class OmniDirectionOdometry(
           val (x, y, theta) = solver2 * listVectorOf(v0, v1, v2)
           pose = pose plusDelta odometry(x, y, theta)
           return pose
-      }*/
+      }
+
     fun update(v0: Double, v1: Double, v2: Double): Pose2D {
         val (u1, u2, theta) = solver * listVectorOf(v0, v1, v2)
         val (x, y) =

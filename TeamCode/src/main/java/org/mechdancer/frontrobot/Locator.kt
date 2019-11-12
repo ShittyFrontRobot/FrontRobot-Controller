@@ -13,14 +13,17 @@ import org.mechdancer.geometry.angle.toDegree
 
 class Locator(private val enable: Boolean = false)
     : AbstractStructure("chassis", {
+    // Left
     encoder("LF") {
         cpr = ENCODER_CPR
         this.enable = enable
     }
+    // Right
     encoder("LB") {
         cpr = ENCODER_CPR
         this.enable = enable
     }
+    // Center
     encoder("RF") {
         cpr = ENCODER_CPR
         this.enable = enable
@@ -47,9 +50,9 @@ class Locator(private val enable: Boolean = false)
 
     // TODO: Encoder pose
     private val odometry: OmniDirectionOdometry = OmniDirectionOdometry(
-        Pose2D(vector2DOf(-0.08065, 0.03426), 45.toDegree()),
-        Pose2D(vector2DOf(0.08065, 0.03425), (-45).toDegree()),
-        Pose2D(vector2DOf(-0.019, -0.046), (-90).toDegree())
+        Pose2D(vector2DOf(0.03426, 0.08065), 135.toDegree()),
+        Pose2D(vector2DOf(0.03425, -0.08065), 45.toDegree()),
+        Pose2D(vector2DOf(-0.046, 0.019), 0.toDegree())
     )
 
     val pose
@@ -78,7 +81,7 @@ class Locator(private val enable: Boolean = false)
     private fun Encoder.shit() = position * TRACK
 
     companion object {
-        const val ENCODER_CPR = 4000.0
-        const val TRACK = 0.0375
+        const val ENCODER_CPR = -4000.0
+        const val TRACK = 0.039312
     }
 }

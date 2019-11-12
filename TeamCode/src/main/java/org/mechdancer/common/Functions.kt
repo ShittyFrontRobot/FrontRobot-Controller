@@ -14,6 +14,7 @@ import org.mechdancer.geometry.angle.toVector
 import org.mechdancer.geometry.rotation3d.Angle3D
 import org.mechdancer.geometry.rotation3d.AxesOrder
 import org.mechdancer.geometry.transformation.Transformation
+import java.text.DecimalFormat
 
 fun Transformation.toPose(): Pose2D {
     require(dim == 2) { "pose is a 2d transformation" }
@@ -41,3 +42,8 @@ fun Pose3D.toTransformation() =
     Transformation.fromInhomogeneous(d.matrix, p)
 
 fun usbManager() = AppUtil.getDefContext().getSystemService(Context.USB_SERVICE) as UsbManager
+
+private val sbFormat = DecimalFormat("#.0000")
+
+fun Pose2D.display() =
+    "(${sbFormat.format(p.x)},${sbFormat.format(p.y)})(${sbFormat.format(d.asRadian())})"
