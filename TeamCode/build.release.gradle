@@ -9,4 +9,8 @@ dependencies {
     implementation (name: 'mechdancerlib', ext: 'aar')
     implementation ("org.mechdancer:linearalgebra:0.2.6-dev-2")
     implementation 'com.github.mik3y:usb-serial-for-android:2.0.0'
+//    implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
+    implementation ("org.mechdancer:remote:0.2.1-dev-13"){
+        exclude group: 'org.slf4j'
+    }
 }

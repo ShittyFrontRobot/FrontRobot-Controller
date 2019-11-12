@@ -1,6 +1,8 @@
 package org.mechdancer
 
 import org.mechdancer.common.display
+import org.mechdancer.common.paintPose
+import org.mechdancer.common.remote
 import org.mechdancer.frontrobot.FrontRobot
 import org.mechdancer.ftclib.algorithm.Lens
 import org.mechdancer.ftclib.algorithm.NEXT
@@ -26,14 +28,15 @@ class SmartOpMode : RemoteControlOpModeAsync<FrontRobot>() {
             telemetry.addData("Left", robot.locator.currentLeft)
             telemetry.addData("Right", robot.locator.currentRight)
             telemetry.addData("Center", robot.locator.currentCenter)
+            remote.paintPose("robot", robot.locator.pose)
         }
     }
 
     override fun loop(master: Gamepad, helper: Gamepad) {
         robot.chassis.descartes {
-            x = limiter(master.leftStick.y)
-            y = limiter(master.leftStick.x)
-            w = -limiter(master.rightStick.x)
+            x = (master.leftStick.y)
+            y = (master.leftStick.x)
+            w = -(master.rightStick.x)
         }
 //
 //        robot.chassis.descartes {
