@@ -1,5 +1,8 @@
 package org.mechdancer.common
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.mechdancer.remote.presets.RemoteHub
 import org.mechdancer.remote.presets.remoteHub
 import org.mechdancer.remote.protocol.writeEnd
@@ -13,6 +16,10 @@ private object PaintCommand : Command {
 
 val remote = remoteHub("robot").also {
     it.openAllNetworks()
+    GlobalScope.launch {
+        while (isActive)
+            it()
+    }
 }
 
 /**

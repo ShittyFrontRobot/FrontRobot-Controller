@@ -10,7 +10,7 @@ import org.mechdancer.geometry.transformation.Transformation
 
 
 val idealTagToTag =
-    Transformation.fromInhomogeneous(Angle3D(90.0.toDegree(), 0.toRad(), 0.toRad(), AxesOrder.XYZ).matrix, vector3DOfZero())
+    Transformation.fromInhomogeneous(Angle3D(90.0.toDegree(), 0.toRad(), 180.toRad(), AxesOrder.ZYX).matrix, vector3DOfZero())
 
 // Axes order of *AprilTag*: Z, Y, X
 // Intrinsic
