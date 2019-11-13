@@ -36,7 +36,7 @@ class OpenMV(private val enable: Boolean = false)
 
 
     companion object {
-        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 0.toDegree(), 90.toDegree(), AxesOrder.ZYX))
+        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 180.toDegree(), (76+19/60).toDegree(), AxesOrder.ZYX))
     }
 
     private lateinit var ioManager: SerialInputOutputManager

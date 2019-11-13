@@ -15,8 +15,8 @@ class FrontRobot : Robot(
         rfMotorDirection = Motor.Direction.REVERSE,
         rbMotorDirection = Motor.Direction.REVERSE
     ),
-    Locator(true),
-    OpenMV(false)
+    Locator(false),
+    OpenMV(true)
 ) {
 
     @Inject

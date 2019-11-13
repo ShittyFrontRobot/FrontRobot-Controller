@@ -36,11 +36,11 @@ class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
 
     override fun loop(master: Gamepad, helper: Gamepad) {
 
-                robot.chassis.descartes {
-            x = PID_X(error.p.y)
-            y = PID_Y(-error.p.x)
-            w = PID_W(error.d.asRadian())
-        }
+//                robot.chassis.descartes {
+//            x = PID_X(error.p.y)
+//            y = PID_Y(error.p.x)
+//            w = PID_W(error.d.asRadian())
+//        }
 
 
         telemetry.addData("location", robot.locator.pose)
