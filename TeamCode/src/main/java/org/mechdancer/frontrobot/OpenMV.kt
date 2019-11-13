@@ -36,7 +36,8 @@ class OpenMV(private val enable: Boolean = false)
 
 
     companion object {
-        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 180.toDegree(), (76+19/60).toDegree(), AxesOrder.ZYX))
+        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 180.toDegree(), (76 + 19 / 60).toDegree(), AxesOrder.ZYX))
+        private const val MAGIC_PER_METER = 20.0
     }
 
     private lateinit var ioManager: SerialInputOutputManager
@@ -47,7 +48,6 @@ class OpenMV(private val enable: Boolean = false)
 
     var rawTag = Pose3D.zero()
     var idealTagOnRobot = Pose3D.zero()
-
 
     var newDataCallback = { _: Pose3D -> }
 
@@ -98,7 +98,7 @@ class OpenMV(private val enable: Boolean = false)
                 // Intrinsic Z-Y-X -> Extrinsic X-Y-Z
                 Pose3D(
                     // 1m -> 20.0
-                    (vector3DOf(it[0], it[1], it[2]) / 20.0).to3D(),
+                    (vector3DOf(it[0], it[1], it[2]) / MAGIC_PER_METER).to3D(),
                     Angle3D(it[3].toDegree(), it[4].toDegree(), it[5].toDegree(), AxesOrder.XYZ)
                 )
             }.let {

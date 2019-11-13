@@ -22,7 +22,7 @@ class RemotePID(private val id: Int, remote: RemoteHub) {
         }
     }
 
-    val core = PID.zero()
+    var core = PID.zero()
 
     var onReset = {}
 
