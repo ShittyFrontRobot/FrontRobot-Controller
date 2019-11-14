@@ -1,19 +1,16 @@
 package org.mechdancer
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.mechdancer.algebra.implement.vector.vector2DOf
-import org.mechdancer.algebra.implement.vector.vector2DOfZero
-import org.mechdancer.common.*
+import org.mechdancer.common.Pose2D
+import org.mechdancer.common.RemotePID
+import org.mechdancer.common.paintPose
+import org.mechdancer.common.remote
 import org.mechdancer.frontrobot.FrontRobot
 import org.mechdancer.ftclib.algorithm.PID
 import org.mechdancer.ftclib.classfilter.Naming
 import org.mechdancer.ftclib.core.opmode.RemoteControlOpMode
 import org.mechdancer.ftclib.gamepad.Gamepad
-import org.mechdancer.geometry.angle.rotate
 import org.mechdancer.geometry.angle.toDegree
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.PI
 import kotlin.math.abs
 
@@ -22,15 +19,13 @@ import kotlin.math.abs
 class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
 
 
-    private var error = Pose2D.zero()
+    private var targetOnRobot = Pose2D.zero()
 
     companion object {
         // m
         const val DISTANCE = 0.65
         const val PID_XY_K = 0.8 / DISTANCE
         const val PID_W_K = 0.4 / (PI / 3)
-        private val rotate90 = Pose2D(vector2DOfZero(), (-90).toDegree()).toTransformation()
-
     }
 
     private val onReset = {
@@ -40,47 +35,45 @@ class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
     private val pidY = RemotePID(1, remote).also { it.onReset = onReset;it.core = PID(PID_XY_K, .0, .0, .05, .0) }
     private val pidW = RemotePID(2, remote).also { it.onReset = onReset;it.core = PID(PID_W_K, .0, .0, .05, .0) }
 
-    // TODO Magic!
-    private fun Pose3D.magic() =
-        Pose2D(vector2DOf(p.x, p.y), d.third.rotate((-90).toDegree()))
-            .let { rotate90.invoke(it) }
-
-    private val int = AtomicInteger(0)
 
     override fun initTask() {
-        robot.openMV.newDataCallback = {
-            GlobalScope.launch {
-                val current = int.incrementAndGet()
-                delay(1000)
-                if (int.get() == current) error = Pose2D.zero()
-            }
+        robot.openMV.onTargetDetected = {
             robot.locator.reset()
-            error = it.magic() plusDelta Pose2D(vector2DOf(DISTANCE, 0), 0.toDegree())
+            targetOnRobot = it plusDelta Pose2D(vector2DOf(DISTANCE, 0), 0.toDegree())
+        }
+        robot.openMV.onTimeout = {
         }
     }
 
     override fun loop(master: Gamepad, helper: Gamepad) {
-
+        val (currentPose, currentD) = robot.locator.pose
+        val (currentX, currentY) = currentPose
+        val (targetPose, targetD) = targetOnRobot
+        val (targetX, targetY) = targetPose
 
         robot.chassis.descartes {
-            x = pidX.core(error.p.x)
-            y = pidY.core(-error.p.y)
+            x = pidX.core(targetX - currentX)
+            y = -pidY.core(targetY - currentY)
             w = when {
-                abs(error.d.asRadian()) < 0.15 -> PID_W_K * 0.15 * 1.5
-                else                           -> pidW.core(error.d.asRadian())
+                abs(targetOnRobot.d.asRadian()) < 0.15 ->
+                    PID_W_K * 0.15 * 1.5
+                else                                   ->
+                    pidW.core(
+                        (targetD.asRadian() - currentD.asRadian())
+                    )
             }
         }
 
         // Paint
-        remote.paintPose("error", error)
+        remote.paintPose("error", targetOnRobot)
         remote.paintPose("robot", Pose2D.zero())
-        remote.paintPose("tag", robot.openMV.idealTagOnRobot.magic())
+        remote.paintPose("tag", robot.openMV.idealTagOnRobot)
+
 
         telemetry.addData("location", robot.locator.pose)
-        telemetry.addData("error", error)
+        telemetry.addData("error", targetOnRobot)
         telemetry.addData("idealTagOnRobot", robot.openMV.idealTagOnRobot)
 
-//
 //        telemetry.addData("Left", robot.locator.currentLeft)
 //        telemetry.addData("Right", robot.locator.currentRight)
 //        telemetry.addData("Center", robot.locator.currentCenter)

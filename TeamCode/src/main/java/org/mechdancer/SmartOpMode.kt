@@ -1,36 +1,32 @@
 package org.mechdancer
 
+import org.mechdancer.common.Pose2D
 import org.mechdancer.common.display
 import org.mechdancer.common.paintPose
 import org.mechdancer.common.remote
 import org.mechdancer.frontrobot.FrontRobot
 import org.mechdancer.ftclib.algorithm.Lens
-import org.mechdancer.ftclib.algorithm.NEXT
-import org.mechdancer.ftclib.algorithm.StateMachine
 import org.mechdancer.ftclib.classfilter.Naming
-import org.mechdancer.ftclib.core.opmode.async.RemoteControlOpModeAsync
+import org.mechdancer.ftclib.core.opmode.RemoteControlOpMode
 import org.mechdancer.ftclib.gamepad.Gamepad
 
 @Naming("极度去世")
-class SmartOpMode : RemoteControlOpModeAsync<FrontRobot>() {
-    override val afterStopMachine: StateMachine = { NEXT }
-    override val initLoopMachine: StateMachine = { NEXT }
+class SmartOpMode : RemoteControlOpMode<FrontRobot>() {
 
     private lateinit var limiter: Lens
 
-    init {
-        initTask.add {
-            limiter = Lens(-1.0, 1.0, -0.3, 0.3)
-            NEXT
-        }
-        displayTask.add {
-            telemetry.addData("Location", robot.locator.pose.display())
-            telemetry.addData("Encoder values", robot.locator.showEncoderValues())
-            remote.paintPose("robot", robot.locator.pose)
-        }
+    override fun initTask() {
+        limiter = Lens(-1.0, 1.0, -0.3, 0.3)
     }
 
+    override fun startTask() {
+        robot.reset()
+    }
+
+
     override fun loop(master: Gamepad, helper: Gamepad) {
+
+        robot.locator.run()
         robot.chassis.descartes {
             x = (master.leftStick.y)
             y = (master.leftStick.x)
@@ -54,6 +50,14 @@ class SmartOpMode : RemoteControlOpModeAsync<FrontRobot>() {
         if (master.leftTrigger.bePressed() && master.rightTrigger.bePressed())
             robot.reset()
 
+        telemetry.addData("Location", robot.locator.pose.display())
+        telemetry.addData("deg", robot.locator.deg)
+        telemetry.addData("Encoder values", robot.locator.showEncoderValues())
 
+        remote.paintPose("robotOnWorld", robot.locator.pose)
+        remote.paintPose("zeroOfWorld", Pose2D.zero())
+    }
+
+    override fun stopTask() {
     }
 }
