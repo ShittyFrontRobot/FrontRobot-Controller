@@ -82,7 +82,7 @@ class OpenMV(private val enable: Boolean = false)
     }
 
     override fun stop() {
-        if (!enable) return
+        if (!enable || !this::ioManager.isInitialized) return
         ioManager.stop()
         port.close()
         executor.shutdown()

@@ -15,7 +15,7 @@ class FrontRobot : Robot(
         rfMotorDirection = Motor.Direction.REVERSE,
         rbMotorDirection = Motor.Direction.REVERSE
     ),
-    Locator(false),
+    MecanumLocator(),
     OpenMV(true)
 ) {
 
@@ -23,7 +23,7 @@ class FrontRobot : Robot(
     lateinit var chassis: Mecanum
 
     @Inject(name = "chassis")
-    lateinit var locator: Locator
+    lateinit var locator: MecanumLocator
 
     @Inject
     lateinit var openMV: OpenMV

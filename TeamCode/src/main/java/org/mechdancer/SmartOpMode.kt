@@ -25,9 +25,7 @@ class SmartOpMode : RemoteControlOpModeAsync<FrontRobot>() {
         }
         displayTask.add {
             telemetry.addData("Location", robot.locator.pose.display())
-            telemetry.addData("Left", robot.locator.currentLeft)
-            telemetry.addData("Right", robot.locator.currentRight)
-            telemetry.addData("Center", robot.locator.currentCenter)
+            telemetry.addData("Encoder values", robot.locator.showEncoderValues())
             remote.paintPose("robot", robot.locator.pose)
         }
     }

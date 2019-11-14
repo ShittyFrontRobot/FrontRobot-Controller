@@ -52,9 +52,9 @@ class Locator(private val enable: Boolean = false)
 
     // TODO: Encoder pose
     private val odometry: OmniDirectionOdometry = OmniDirectionOdometry(
-        Pose2D(vector2DOf(0.03426, 0.08065), 135.toDegree()),
-        Pose2D(vector2DOf(0.03425, -0.08065), 45.toDegree()),
-        Pose2D(vector2DOf(-0.046, 0.019), 0.toDegree())
+        Pose2D(vector2DOf(0.048, 0.068), 135.toDegree()),
+        Pose2D(vector2DOf(0.0435, -0.07), 45.toDegree()),
+        Pose2D(vector2DOf(-0.031, 0.005), 0.toDegree())
     )
 
     val pose
