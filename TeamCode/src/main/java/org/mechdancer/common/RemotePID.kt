@@ -1,8 +1,5 @@
 package org.mechdancer.common
 
-import org.mechdancer.dependency.Component
-import org.mechdancer.dependency.DynamicScope
-import org.mechdancer.dependency.plusAssign
 import org.mechdancer.ftclib.algorithm.PID
 import org.mechdancer.remote.modules.multicast.multicastListener
 import org.mechdancer.remote.presets.RemoteHub
@@ -10,16 +7,8 @@ import org.mechdancer.remote.resources.Command
 import java.io.DataInputStream
 
 class RemotePID(private val id: Int, remote: RemoteHub) {
-    companion object {
-        private val pidCmd = object : Command {
-            override val id: Byte = 9
-        }
-
-        private fun RemoteHub.addDependency(component: Component) {
-            (RemoteHub::class.java.declaredFields.find { it.name.contains("scope") }!!.also {
-                it.isAccessible = true
-            }[this] as DynamicScope) += component
-        }
+    companion object : Command {
+        override val id: Byte = 9
     }
 
     var core = PID.zero()
@@ -28,7 +17,7 @@ class RemotePID(private val id: Int, remote: RemoteHub) {
 
     init {
         multicastListener { _, cmd, payload ->
-            if (cmd != pidCmd.id) return@multicastListener
+            if (cmd != RemotePID.id) return@multicastListener
             DataInputStream(payload.inputStream()).apply {
                 remote.components
                 if (readInt() != id) return@multicastListener

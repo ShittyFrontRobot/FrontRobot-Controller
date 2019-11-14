@@ -1,5 +1,6 @@
 package org.mechdancer
 
+import com.qualcomm.robotcore.hardware.DcMotor
 import org.mechdancer.common.Pose2D
 import org.mechdancer.common.display
 import org.mechdancer.common.paintPose
@@ -15,7 +16,11 @@ class SmartOpMode : RemoteControlOpMode<FrontRobot>() {
 
     private lateinit var limiter: Lens
 
+    private lateinit var left: DcMotor
+    private lateinit var right: DcMotor
     override fun initTask() {
+        left = hardwareMap.dcMotor["lifting.left"]
+        right = hardwareMap.dcMotor["lifting.right"]
         limiter = Lens(-1.0, 1.0, -0.3, 0.3)
     }
 
@@ -27,6 +32,20 @@ class SmartOpMode : RemoteControlOpMode<FrontRobot>() {
     override fun loop(master: Gamepad, helper: Gamepad) {
 
         robot.locator.run()
+
+        left.power = when {
+            master.up.bePressed()   -> -1.0
+            master.down.bePressed() -> 1.0
+            else                    -> .0
+        }
+
+        right.power = when {
+            master.right.bePressed() -> 1.0
+            master.left.bePressed()  -> -1.0
+            else                     -> .0
+        }
+
+
         robot.chassis.descartes {
             x = (master.leftStick.y)
             y = (master.leftStick.x)
