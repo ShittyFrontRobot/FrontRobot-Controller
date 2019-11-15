@@ -19,7 +19,7 @@ data class Pose2D(
     /** 增量 [delta] 累加到里程 */
     infix fun plusDelta(delta: Pose2D) =
         Pose2D(p + delta.p.rotate(d),
-                 d rotate delta.d)
+            d rotate delta.d)
 
     /** 里程回滚到增量 [delta] 之前 */
     infix fun minusDelta(delta: Pose2D) =
@@ -29,7 +29,7 @@ data class Pose2D(
     /** 计算里程从标记 [mark] 到当前状态的增量 */
     infix fun minusState(mark: Pose2D) =
         Pose2D((p - mark.p).rotate(-mark.d),
-                 d.rotate(-mark.d).adjust())
+            d.rotate(-mark.d).adjust())
 
     override fun toString() = "(${p.x}, ${p.y})($d)"
 

@@ -38,7 +38,7 @@ class MecanumLocator :
             enable = true
         }
 
-    }), Resettable,AutoCallable {
+    }), Resettable, AutoCallable {
 
     @Inject("LF")
     private lateinit var lf: Encoder
@@ -52,9 +52,9 @@ class MecanumLocator :
     @Inject("RB")
     private lateinit var rb: Encoder
 
-    private var lastEncoderValues: ListVector= listVectorOfZero(4)
+    private var lastEncoderValues: ListVector = listVectorOfZero(4)
 
-    var pose: Pose2D= Pose2D.zero()
+    var pose: Pose2D = Pose2D.zero()
         private set
 
     fun showEncoderValues() = """
