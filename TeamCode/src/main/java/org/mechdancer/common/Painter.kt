@@ -1,10 +1,11 @@
 package org.mechdancer.common
 
+import com.qualcomm.robotcore.util.RobotLog
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager
 import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManagerFactory
+import org.mechdancer.remote.modules.multicast.multicastListener
 import org.mechdancer.remote.presets.RemoteHub
 import org.mechdancer.remote.presets.remoteHub
 import org.mechdancer.remote.protocol.writeEnd
@@ -16,7 +17,11 @@ private object PaintCommand : Command {
     override val id = 6.toByte()
 }
 
-val remote = remoteHub("robot-${DeviceNameManagerFactory.getInstance().deviceName}").also {
+val remote = remoteHub("robot-${DeviceNameManagerFactory.getInstance().deviceName}") {
+    multicastListener(RemoteDouble, RemotePID) { sender, cmd, _ ->
+        RobotLog.ww("remote", "$sender, $cmd")
+    }
+}.also {
     it.openAllNetworks()
     GlobalScope.launch {
         while (isActive)

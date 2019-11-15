@@ -12,6 +12,7 @@ import org.mechdancer.dependency.Component
 import org.mechdancer.dependency.DynamicScope
 import org.mechdancer.dependency.plusAssign
 import org.mechdancer.ftclib.algorithm.PID
+import org.mechdancer.ftclib.util.SmartLogger
 import org.mechdancer.geometry.angle.toAngle
 import org.mechdancer.geometry.angle.toRad
 import org.mechdancer.geometry.angle.toVector
@@ -57,6 +58,9 @@ fun usbManager() = AppUtil.getDefContext().getSystemService(Context.USB_SERVICE)
 
 private val sbFormat = DecimalFormat("#.0000")
 
+val globalLogger = object : SmartLogger {
+    override val tag: String = "Global"
+}
 
 // Remote
 

@@ -8,7 +8,6 @@ import org.mechdancer.geometry.rotation3d.AxesOrder
 import org.mechdancer.geometry.transformation.Transformation
 
 
-
 val idealTagToTag =
     Transformation.fromInhomogeneous(Angle3D(90.0.toDegree(), 0.toRad(), 0.toDegree(), AxesOrder.XYZ).matrix, vector3DOfZero())
 

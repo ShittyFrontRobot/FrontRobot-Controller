@@ -11,7 +11,7 @@ import org.mechdancer.ftclib.classfilter.Naming
 import org.mechdancer.ftclib.core.opmode.RemoteControlOpMode
 import org.mechdancer.ftclib.gamepad.Gamepad
 
-@Naming("极度去世")
+@Naming("升降测试")
 class SmartOpMode : RemoteControlOpMode<FrontRobot>() {
 
     private lateinit var limiter: Lens
@@ -33,8 +33,8 @@ class SmartOpMode : RemoteControlOpMode<FrontRobot>() {
 
 
         left.power = when {
-            master.up.bePressed()   -> -1.0
-            master.down.bePressed() -> 1.0
+            master.up.bePressed()   -> 1.0
+            master.down.bePressed() -> -1.0
             else                    -> .0
         }
 
@@ -69,7 +69,6 @@ class SmartOpMode : RemoteControlOpMode<FrontRobot>() {
             robot.reset()
 
         telemetry.addData("Location", robot.locator.pose.display())
-        telemetry.addData("deg", robot.locator.deg)
         telemetry.addData("Encoder values", robot.locator.showEncoderValues())
 
         remote.paintPose("robotOnWorld", robot.locator.pose)

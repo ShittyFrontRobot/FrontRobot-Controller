@@ -15,8 +15,7 @@ class RemoteDouble(private val id: Int, remote: RemoteHub) {
     var onNewData = { _: Double -> }
 
     init {
-        multicastListener { _, cmd, payload ->
-            if (cmd != RemoteDouble.id) return@multicastListener
+        multicastListener(RemoteDouble) { _, _, payload ->
             DataInputStream(payload.inputStream()).apply {
                 remote.components
                 if (readInt() != id) return@multicastListener

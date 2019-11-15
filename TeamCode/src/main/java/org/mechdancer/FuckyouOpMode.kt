@@ -12,10 +12,9 @@ import org.mechdancer.ftclib.core.opmode.RemoteControlOpMode
 import org.mechdancer.ftclib.gamepad.Gamepad
 import org.mechdancer.geometry.angle.toDegree
 import kotlin.math.PI
-import kotlin.math.abs
 
 
-@Naming("淦")
+@Naming("紫薯布丁")
 class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
 
 
@@ -24,24 +23,21 @@ class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
     companion object {
         // m
         const val DISTANCE = 0.65
-        const val PID_XY_K = 0.8 / DISTANCE
-        const val PID_W_K = 0.4 / (PI / 3)
     }
 
     private val onReset = {
-        robot.reset()
+        //        robot.reset()
     }
-    private val pidX = RemotePID(0, remote).also { it.onReset = onReset;it.core = PID(PID_XY_K, .0, .0, .05, .0) }
-    private val pidY = RemotePID(1, remote).also { it.onReset = onReset;it.core = PID(PID_XY_K, .0, .0, .05, .0) }
-    private val pidW = RemotePID(2, remote).also { it.onReset = onReset;it.core = PID(PID_W_K, .0, .0, .05, .0) }
+
+    private val pidX = RemotePID(0, remote).also { it.onReset = onReset;it.core = PID(1.5 / 0.65, .0, .0, .15, .08) }
+    private val pidY = RemotePID(1, remote).also { it.onReset = onReset;it.core = PID(1.5 / 0.65, .2, .0, .15, .08) }
+    private val pidW = RemotePID(2, remote).also { it.onReset = onReset;it.core = PID(0.39, .0, .0, .05, .0) }
 
 
     override fun initTask() {
         robot.openMV.onTargetDetected = {
             robot.locator.reset()
             targetOnRobot = it plusDelta Pose2D(vector2DOf(DISTANCE, 0), 0.toDegree())
-        }
-        robot.openMV.onTimeout = {
         }
     }
 
@@ -53,16 +49,8 @@ class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
 
         robot.chassis.descartes {
             x = pidX.core(targetX - currentX)
-            y = pidY.core(targetY - currentY)
+            y = -pidY.core(targetY - currentY)
             w = pidW.core((targetD.asRadian() - currentD.asRadian()))
-//                    when {
-//                abs(targetD.asRadian() - currentD.asRadian()) < 0.15 ->
-//                    PID_W_K * 0.15 * 1.5
-//                else                                   ->
-//                    pidW.core(
-//                        (targetD.asRadian() - currentD.asRadian())
-//                    )
-//            }
         }
 
         // Paint
@@ -73,8 +61,13 @@ class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
 
         telemetry.addData("robotOnWorld", robot.locator.pose)
         telemetry.addData("targetOnRobot", targetOnRobot)
-        telemetry.addData("error", "x:${targetX - currentX}\n y:${targetY - currentY}\n w:${targetD.asRadian() - currentD.asRadian()}\n")
+        telemetry.addData("error", "\nx:${targetX - currentX}\n y:${targetY - currentY}\n w:${(targetD.asRadian() - currentD.asRadian()).let { var result = it;while (result > PI) result -= 2 * PI;while (result < -PI) result += 2 * PI;result }}\n")
         telemetry.addData("tagOnRobot", robot.openMV.idealTagOnRobot)
+
+
+        telemetry.addData("pidX", pidX.core)
+        telemetry.addData("pidY", pidY.core)
+        telemetry.addData("pidW", pidW.core)
 
 //        telemetry.addData("Left", robot.locator.currentLeft)
 //        telemetry.addData("Right", robot.locator.currentRight)

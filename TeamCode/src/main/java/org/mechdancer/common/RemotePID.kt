@@ -16,10 +16,8 @@ class RemotePID(private val id: Int, remote: RemoteHub) {
     var onReset = {}
 
     init {
-        multicastListener { _, cmd, payload ->
-            if (cmd != RemotePID.id) return@multicastListener
+        multicastListener(RemotePID) { _, _, payload ->
             DataInputStream(payload.inputStream()).apply {
-                remote.components
                 if (readInt() != id) return@multicastListener
                 with(core) {
                     k = readDouble()

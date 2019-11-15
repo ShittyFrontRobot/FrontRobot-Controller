@@ -5,9 +5,6 @@ import android.content.Intent
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil
 import org.mechdancer.algebra.function.vector.div
 import org.mechdancer.algebra.implement.vector.*
@@ -20,15 +17,14 @@ import org.mechdancer.ftclib.util.SmartLogger
 import org.mechdancer.ftclib.util.warn
 import org.mechdancer.geometry.angle.rotate
 import org.mechdancer.geometry.angle.toDegree
+import org.mechdancer.geometry.angle.toRad
 import org.mechdancer.geometry.rotation3d.Angle3D
 import org.mechdancer.geometry.rotation3d.AxesOrder
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.atomic.AtomicInteger
 
 class OpenMV(
-    private val enable: Boolean = false,
-    private val timeout: Long = 1000
+    private val enable: Boolean = false
 ) : MonomericStructure("openMV"),
     OpModeLifecycle.Initialize<Robot>,
     OpModeLifecycle.Start,
@@ -38,8 +34,9 @@ class OpenMV(
 
 
     companion object {
-        private val camera = Pose3D(vector3DOf(0,0.0045,0), Angle3D(0.toDegree(), 180.toDegree(), (76 + 19 / 60).toDegree(), AxesOrder.ZYX))
-        private const val MAGIC_PER_METER = 20.0
+        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 180.toDegree(), (76 + 19 / 60).toDegree(), AxesOrder.ZYX))
+        private const val MAGIC_PER_METER = 15.0
+        //        private const val MAGIC_PER_METER = 13.1 The Big One
         private val rotate90 = Pose2D(vector2DOfZero(), (-90).toDegree()).toTransformation()
 
     }
@@ -49,15 +46,12 @@ class OpenMV(
 
     private lateinit var executor: ExecutorService
 
-    private lateinit var int: AtomicInteger
-
     var rawTag = Pose3D.zero()
         private set
     var idealTagOnRobot = Pose2D.zero()
         private set
 
     var onTargetDetected = { _: Pose2D -> }
-    var onTimeout = {}
 
 
     // TODO Magic!
@@ -69,9 +63,8 @@ class OpenMV(
         init()
     }
 
-    fun init() {
+    private fun init() {
         if (!enable) return
-        int = AtomicInteger(0)
         val drivers =
             UsbSerialProber
                 .getDefaultProber()
@@ -108,30 +101,27 @@ class OpenMV(
     }
 
     override fun onNewData(data: ByteArray) {
-        GlobalScope.launch {
-            try {
-                String(data).trim().split(",").map { it.toDouble() }.let {
-                    // Intrinsic Z-Y-X -> Extrinsic X-Y-Z
-                    Pose3D(
-                        // 1m -> 20.0
-                        (vector3DOf(it[0], it[1], it[2]) / MAGIC_PER_METER).to3D(),
-                        Angle3D(it[3].toDegree(), it[4].toDegree(), it[5].toDegree(), AxesOrder.XYZ)
-                    )
-                }.let {
-                    warn("new data: $it")
-                    rawTag = it
-                    idealTagOnRobot = idealTagToRobot(it, camera).toPose3D(AxesOrder.XYZ).magic()
-                    onTargetDetected(idealTagOnRobot)
-                    val current = int.incrementAndGet()
-                    delay(timeout)
-                    if (int.get() == current) onTimeout()
-                }
-            } catch (e: Throwable) {
-                e.printStackTrace()
+        try {
+            String(data).trim().split(",").map { it.toDouble() }.let {
+                // Intrinsic Z-Y-X -> Extrinsic X-Y-Z
+                Pose3D(
+                    // 1m -> 20.0
+                    (vector3DOf(it[0], it[1], it[2]) / MAGIC_PER_METER).to3D(),
+                    Angle3D(it[3].toRad(), it[4].toRad(), it[5].toRad(), AxesOrder.XYZ)
+                )
+            }.let {
+                warn("new data: $it")
+                rawTag = it
+                idealTagOnRobot = idealTagToRobot(it, camera).also { m ->
+                    warn("finalMatrix\n$m")
+                }.toPose3D(AxesOrder.XYZ).magic()
+                onTargetDetected(idealTagOnRobot)
             }
+        } catch (e: Throwable) {
+            e.printStackTrace()
         }
-
     }
+
 
     override fun toString(): String = javaClass.simpleName
 

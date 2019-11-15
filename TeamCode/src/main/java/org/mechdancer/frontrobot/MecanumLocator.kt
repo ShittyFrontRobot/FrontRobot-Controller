@@ -54,8 +54,6 @@ class MecanumLocator :
 
     private var lastEncoderValues: ListVector= listVectorOfZero(4)
 
-    var deg = .0
-
     var pose: Pose2D= Pose2D.zero()
         private set
 
@@ -74,7 +72,6 @@ class MecanumLocator :
         rb.reset(.0)
         lastEncoderValues = listVectorOfZero(4)
         pose = Pose2D.zero()
-        deg = .0
     }
 
 
@@ -82,7 +79,6 @@ class MecanumLocator :
         val currentEncoderValues = listVectorOf(lf.position, lb.position, rf.position, rb.position) * Locator.TRACK
         val (x, y, w) = solverMatrix * (currentEncoderValues - lastEncoderValues)
         lastEncoderValues = currentEncoderValues
-        deg += w
         pose = pose plusDelta Pose2D(vector2DOf(x, y), w.toRad())
     }
 
