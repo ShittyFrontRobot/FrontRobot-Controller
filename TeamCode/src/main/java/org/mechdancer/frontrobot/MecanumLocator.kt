@@ -15,6 +15,7 @@ import org.mechdancer.ftclib.core.structure.injector.Inject
 import org.mechdancer.ftclib.core.structure.monomeric.MotorWithEncoder
 import org.mechdancer.ftclib.core.structure.monomeric.encoder
 import org.mechdancer.ftclib.core.structure.monomeric.sensor.Encoder
+import org.mechdancer.ftclib.util.AutoCallable
 import org.mechdancer.ftclib.util.Resettable
 import org.mechdancer.geometry.angle.toRad
 
@@ -37,7 +38,7 @@ class MecanumLocator :
             enable = true
         }
 
-    }), Resettable {
+    }), Resettable,AutoCallable {
 
     @Inject("LF")
     private lateinit var lf: Encoder
@@ -51,11 +52,11 @@ class MecanumLocator :
     @Inject("RB")
     private lateinit var rb: Encoder
 
-    private lateinit var lastEncoderValues: ListVector
+    private var lastEncoderValues: ListVector= listVectorOfZero(4)
 
     var deg = .0
 
-    lateinit var pose: Pose2D
+    var pose: Pose2D= Pose2D.zero()
         private set
 
     fun showEncoderValues() = """

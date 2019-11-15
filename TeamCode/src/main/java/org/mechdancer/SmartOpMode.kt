@@ -31,7 +31,6 @@ class SmartOpMode : RemoteControlOpMode<FrontRobot>() {
 
     override fun loop(master: Gamepad, helper: Gamepad) {
 
-        robot.locator.run()
 
         left.power = when {
             master.up.bePressed()   -> -1.0

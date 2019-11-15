@@ -53,26 +53,28 @@ class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
 
         robot.chassis.descartes {
             x = pidX.core(targetX - currentX)
-            y = -pidY.core(targetY - currentY)
-            w = when {
-                abs(targetOnRobot.d.asRadian()) < 0.15 ->
-                    PID_W_K * 0.15 * 1.5
-                else                                   ->
-                    pidW.core(
-                        (targetD.asRadian() - currentD.asRadian())
-                    )
-            }
+            y = pidY.core(targetY - currentY)
+            w = pidW.core((targetD.asRadian() - currentD.asRadian()))
+//                    when {
+//                abs(targetD.asRadian() - currentD.asRadian()) < 0.15 ->
+//                    PID_W_K * 0.15 * 1.5
+//                else                                   ->
+//                    pidW.core(
+//                        (targetD.asRadian() - currentD.asRadian())
+//                    )
+//            }
         }
 
         // Paint
-        remote.paintPose("error", targetOnRobot)
-        remote.paintPose("robot", Pose2D.zero())
-        remote.paintPose("tag", robot.openMV.idealTagOnRobot)
+        remote.paintPose("targetOnRobot", targetOnRobot)
+        remote.paintPose("tagOnRobot", robot.openMV.idealTagOnRobot)
+        remote.paintPose("robotOnWorld", robot.locator.pose)
+        remote.paintPose("zeroOfWorld", Pose2D.zero())
 
-
-        telemetry.addData("location", robot.locator.pose)
-        telemetry.addData("error", targetOnRobot)
-        telemetry.addData("idealTagOnRobot", robot.openMV.idealTagOnRobot)
+        telemetry.addData("robotOnWorld", robot.locator.pose)
+        telemetry.addData("targetOnRobot", targetOnRobot)
+        telemetry.addData("error", "x:${targetX - currentX}\n y:${targetY - currentY}\n w:${targetD.asRadian() - currentD.asRadian()}\n")
+        telemetry.addData("tagOnRobot", robot.openMV.idealTagOnRobot)
 
 //        telemetry.addData("Left", robot.locator.currentLeft)
 //        telemetry.addData("Right", robot.locator.currentRight)

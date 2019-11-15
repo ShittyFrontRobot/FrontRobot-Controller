@@ -3,6 +3,8 @@ package org.mechdancer.common
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManager
+import org.firstinspires.ftc.robotcore.internal.network.DeviceNameManagerFactory
 import org.mechdancer.remote.presets.RemoteHub
 import org.mechdancer.remote.presets.remoteHub
 import org.mechdancer.remote.protocol.writeEnd
@@ -14,7 +16,7 @@ private object PaintCommand : Command {
     override val id = 6.toByte()
 }
 
-val remote = remoteHub("robot").also {
+val remote = remoteHub("robot-${DeviceNameManagerFactory.getInstance().deviceName}").also {
     it.openAllNetworks()
     GlobalScope.launch {
         while (isActive)

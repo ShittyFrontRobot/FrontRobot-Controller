@@ -38,7 +38,7 @@ class OpenMV(
 
 
     companion object {
-        private val camera = Pose3D(vector3DOfZero(), Angle3D(0.toDegree(), 180.toDegree(), (76 + 19 / 60).toDegree(), AxesOrder.ZYX))
+        private val camera = Pose3D(vector3DOf(0,0.0045,0), Angle3D(0.toDegree(), 180.toDegree(), (76 + 19 / 60).toDegree(), AxesOrder.ZYX))
         private const val MAGIC_PER_METER = 20.0
         private val rotate90 = Pose2D(vector2DOfZero(), (-90).toDegree()).toTransformation()
 
