@@ -22,16 +22,16 @@ class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
 
     companion object {
         // m
-        const val DISTANCE = 0.65
+        const val DISTANCE = 0.8
     }
 
     private val onReset = {
         //        robot.reset()
     }
 
-    private val pidX = RemotePID(0, remote).also { it.onReset = onReset;it.core = PID(1.5 / 0.65, .0, .0, .15, .08) }
-    private val pidY = RemotePID(1, remote).also { it.onReset = onReset;it.core = PID(1.5 / 0.65, .2, .0, .15, .08) }
-    private val pidW = RemotePID(2, remote).also { it.onReset = onReset;it.core = PID(0.39, .0, .0, .05, .0) }
+    private val pidX = RemotePID(0, remote).also { it.onReset = onReset;it.core = PID(1.5 / 0.8, .0, .0, .15, .08) }
+    private val pidY = RemotePID(1, remote).also { it.onReset = onReset;it.core = PID(1.5 / 0.8, .2, .0, .15, .08) }
+    private val pidW = RemotePID(2, remote).also { it.onReset = onReset;it.core = PID(0.46, .0, .0, .05, .0) }
 
 
     override fun initTask() {
