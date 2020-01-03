@@ -12,8 +12,8 @@ class FrontRobot : Robot(
         enable = true,
         lfMotorDirection = Motor.Direction.FORWARD,
         lbMotorDirection = Motor.Direction.FORWARD,
-        rfMotorDirection = Motor.Direction.REVERSE,
-        rbMotorDirection = Motor.Direction.REVERSE
+        rfMotorDirection = Motor.Direction.FORWARD,
+        rbMotorDirection = Motor.Direction.FORWARD
     ),
     MecanumLocator(),
     OpenMV(true)
