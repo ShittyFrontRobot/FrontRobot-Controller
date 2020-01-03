@@ -28,10 +28,23 @@ class SBOpMode : OpMode() {
 
     override fun loop() {
 
-        sb1.power = .3
-        sb2.power = .3
-        sb3.power = .3
-        sb4.power = .3
+        sb1.power =
+            if (gamepad1.a)
+                .3
+            else .0
+        sb2.power =
+            if (gamepad1.b)
+                .3
+            else .0
+        sb3.power =
+            if (gamepad1.x)
+                .3
+            else .0
+        sb4.power =
+            if (gamepad1.y)
+                .3
+            else .0
+
 
         telemetry.addData("SB1", sb1.currentPosition)
         telemetry.addData("SB2", sb2.currentPosition)

@@ -49,7 +49,7 @@ class FuckyouOpMode : RemoteControlOpMode<FrontRobot>() {
 
         robot.chassis.descartes {
             x = pidX.core(targetX - currentX)
-            y = -pidY.core(targetY - currentY)
+            y = pidY.core(targetY - currentY)
             w = pidW.core((targetD.asRadian() - currentD.asRadian()))
         }
 

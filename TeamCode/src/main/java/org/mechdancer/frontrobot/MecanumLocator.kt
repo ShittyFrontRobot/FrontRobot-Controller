@@ -22,7 +22,7 @@ import org.mechdancer.geometry.angle.toRad
 class MecanumLocator :
     AbstractStructure("chassis", {
         encoder("LF") {
-            cpr = MotorWithEncoder.Neverest40
+            cpr = -MotorWithEncoder.Neverest40
             enable = true
         }
         encoder("LB") {
@@ -30,7 +30,7 @@ class MecanumLocator :
             enable = true
         }
         encoder("RF") {
-            cpr = -MotorWithEncoder.Neverest40
+            cpr = MotorWithEncoder.Neverest40
             enable = true
         }
         encoder("RB") {

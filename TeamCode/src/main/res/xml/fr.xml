@@ -4,8 +4,8 @@
         <LynxModule name="Expansion Hub 1" port="1">
             <LynxEmbeddedIMU name="imu" bus="0" port="0"/>
             <NeveRest40Gearmotor name="chassis.RB" port="0"/>
-            <NeveRest40Gearmotor name="chassis.RF" port="3"/>
-            <NeveRest40Gearmotor name="chassis.LF" port="1"/>
+            <NeveRest40Gearmotor name="chassis.RF" port="1"/>
+            <NeveRest40Gearmotor name="chassis.LF" port="3"/>
             <NeveRest40Gearmotor name="chassis.LB" port="2"/>
         </LynxModule>
     </LynxUsbDevice>
